@@ -1,0 +1,35 @@
+const client = require('../config/database');
+
+const eventController = {
+    get : (req, res) => {
+        client.query('SELECT * FROM events;', (err, result) => {
+            if(err) {
+                console.log(err.stack)
+                res.send('Erreur de requête');
+            }
+            else{
+                res.render('events', {events: result.rows});
+            }
+        });
+    },
+    getById : (req, res) => {
+        const id = +req.params.id;
+        client.query('SELECT * FROM events WHERE id = $1', [id], (err, result) => {
+            if(err){
+                console.log(err.stack);
+                res.send('Erreur de requête');
+            }
+            else{
+                if(result.rows.length > 0){
+                    const event = result.rows[0];
+                    res.render('events_detail', {event});
+                }
+                else{
+                    res.send('Event non trouvé');
+                }
+            }
+        });
+    },
+};
+
+module.exports = eventController;
