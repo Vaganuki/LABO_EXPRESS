@@ -1,4 +1,5 @@
 const client = require('../config/database');
+const db = require('../models');
 
 const eventController = {
     get : (req, res) => {
@@ -41,6 +42,22 @@ const eventController = {
                 }
             }
         });
+    },
+    addEvent : async (req, res) => {
+        const {name, description, places_count, id_categorie, id_form, image, date_debut, date_fin, annulation, id_createur} = req.body;
+        const event = await db.event.findOne({where: {
+            name,
+            id_categorie,
+            date_debut
+        }});
+
+        if(!event) {
+            const data = await db.event.create({name, description, places_count, id_categorie, id_form, image, date_debut, date_fin, annulation, id_createur});
+            res.status(201).json(data.toJSON());
+        }
+        else{
+            res.status(400).json({error: 'Cet event a déjà été créé'});
+        }
     },
 };
 
