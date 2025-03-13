@@ -29,6 +29,14 @@ const eventModel = (Sequelize) => {
                 },
                 allowNull: false,
             },
+            id_format:{
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'formats',
+                    key:'id',
+                },
+                allowNull: false,
+            },
             image:{
                 type: DataTypes.STRING,
             },
@@ -56,6 +64,9 @@ const eventModel = (Sequelize) => {
     event.associate = (models) => {
         event.belongsTo(models.categorie, {
             foreignKey: 'id_categorie',
+        });
+        event.belongsTo(models.format, {
+            foreignKey: 'id_format',
         });
         event.hasMany(models.inscription,{
             foreignKey:'id_event',
