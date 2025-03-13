@@ -2,13 +2,25 @@ const client = require('../config/database');
 
 const eventController = {
     get : (req, res) => {
-        client.query('SELECT * FROM events;', (err, result) => {
+        const today = new Date();
+        client.query('SELECT * FROM events WHERE date_debut > $1;', [today], (err, result) => {
             if(err) {
                 console.log(err.stack)
                 res.send('Erreur de requête');
             }
             else{
                 res.render('events', {events: result.rows});
+            }
+        });
+    },
+    getAll : (req, res) => {
+        client.query('SELECT * FROM events;', (err, result) => {
+            if(err) {
+                console.log(err.stack)
+                res.send('Erreur de requête');
+            }
+            else{
+                res.render('events_archives', {events: result.rows});
             }
         });
     },
@@ -22,7 +34,7 @@ const eventController = {
             else{
                 if(result.rows.length > 0){
                     const event = result.rows[0];
-                    res.render('events_detail', {event});
+                    res.render('events_details', {event});
                 }
                 else{
                     res.send('Event non trouvé');

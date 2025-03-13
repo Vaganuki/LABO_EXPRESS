@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="fr">
+<%- include('./shared/head') %>
+<body>
+<%- include('./shared/header') %>
+<main>
+    <div>
+        <img src="/images/<%= event.image %>" alt="<%= event.name %>">
+        <p><%= event.name %></p>
+        <p><%= event.description %></p>
+        <p><%= event.places_count %></p>
+        <p><%= event.date_debut %></p>
+        <p><%= event.date_fin %> </p>
+    </div>
+</main>
+<%- include('./shared/footer') %>
+</body>
+</html>
