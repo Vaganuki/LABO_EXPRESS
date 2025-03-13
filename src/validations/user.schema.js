@@ -22,9 +22,9 @@ const userSchema = yup.object({
             const hasSymbole = /["!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"]/.test(value);
             let validConditions = 0;
             const numberOfMustBeValidConditions = 3;
-            const conditions = [hasUpperCase,hasNumber,hasLowerCase,hasSymbole];
+            const conditions = [ hasUpperCase,hasNumber, hasLowerCase,hasSymbole ];
             conditions.forEach(condition => (condition? validConditions++ : null))
-            if(validConditions>=numberOfMustBeValidConditions){
+            if(validConditions >= numberOfMustBeValidConditions){
                 return true;
             }
             return false;
