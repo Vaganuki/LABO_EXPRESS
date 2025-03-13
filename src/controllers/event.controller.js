@@ -3,7 +3,7 @@ const client = require('../config/database');
 const eventController = {
     get : (req, res) => {
         const today = new Date();
-        client.query('SELECT * FROM events WHERE date_debut > $1;', [today], (err, result) => {
+        client.query('SELECT * FROM events WHERE date_debut > $1 ORDER BY date_debut;', [today], (err, result) => {
             if(err) {
                 console.log(err.stack)
                 res.send('Erreur de requête');
@@ -14,7 +14,7 @@ const eventController = {
         });
     },
     getAll : (req, res) => {
-        client.query('SELECT * FROM events;', (err, result) => {
+        client.query('SELECT * FROM events ORDER BY date_fin DESC;', (err, result) => {
             if(err) {
                 console.log(err.stack)
                 res.send('Erreur de requête');
