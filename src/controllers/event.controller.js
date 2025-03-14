@@ -36,7 +36,14 @@ const eventController = {
             else{
                 if(result.rows.length > 0){
                     const event = result.rows[0];
-                    res.render('events_details', {event});
+                    client.query('SELECT * FROM inscriptions WHERE id_event = $1', [id], (err, resultCount) => {
+                        if(err){
+                            res.render('events_details', {event, placeRest: 'Erreur du calcul de places restantes'});
+                        }
+                        else{
+                            res.render('events_details', {event, placeRest: event.places_count - resultCount.rowCount});
+                        }
+                    });
                 }
                 else{
                     res.send('Event non trouvé');

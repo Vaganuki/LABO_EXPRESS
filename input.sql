@@ -62,4 +62,5 @@ VALUES
 -- Tournoi Pauper Bruxelles
 ('Tournoi Pauper Bruxelles', 'Compétition pour les joueurs de Pauper à Bruxelles.', 64, 1, 8, 'image_pauper_brussels.jpg', '2024-05-10', '2024-05-10', false, 1);
 
+INSERT INTO inscriptions (id_event, id_user) VALUES ('23','1');
 DROP TABLE categories, events, formats, inscriptions, users;
