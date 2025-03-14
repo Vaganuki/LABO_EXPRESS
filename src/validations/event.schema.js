@@ -1,5 +1,9 @@
 const yup = require('yup');
 
+function getMinDate() {
+    return new Date();
+}
+
 const eventSchema = yup.object({
     name: yup.string()
         .required()
@@ -15,23 +19,25 @@ const eventSchema = yup.object({
         .required()
         .integer()
         .positive(),
+    id_format: yup.number()
+        .required()
+        .integer()
+        .positive(),    
     image: yup.mixed()
-        .test('fileSize','',
+        .test('fileSize','Image trop grosse t\'as capté',
             value => value && value.size <= 200000000
         )
-        .test('fileType','',
+        .test('fileType','On aime pas trop les images comme toi par ici',
             value => value && ['image/jpeg','image/png','image/gif'].includes(value.mimetype)
         ),
     date_debut: yup.date()
         .required()
         .min(getMinDate())
-        .max(ref('date_fin')),
-    date_fin: yup.lazy(()=> date()
-        .min(ref('date_debut'))
-        .max(getMaxDate())
-        )
+        .max(yup.ref('date_fin')),
+    date_fin: yup.date()
+        .min(yup.ref('date_debut'))
         .required(),
-    annulation: yup.BooleanSchema()
+    annulation: yup.boolean()
         .default(false),
     id_createur: yup.number()
         .integer()

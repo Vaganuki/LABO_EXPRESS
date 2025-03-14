@@ -44,7 +44,8 @@ const eventController = {
         });
     },
     addEvent : async (req, res) => {
-        const {name, description, places_count, id_categorie, id_form, image, date_debut, date_fin, annulation, id_createur} = req.body;
+        console.log('oui')
+        const {name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur} = req.body;
         const event = await db.event.findOne({where: {
             name,
             id_categorie,
@@ -52,7 +53,7 @@ const eventController = {
         }});
 
         if(!event) {
-            const data = await db.event.create({name, description, places_count, id_categorie, id_form, image, date_debut, date_fin, annulation, id_createur});
+            const data = await db.event.create({name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur});
             res.status(201).json(data.toJSON());
         }
         else{
