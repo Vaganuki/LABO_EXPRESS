@@ -7,7 +7,7 @@ const upload = require('../middlewares/multer.middleware');
 eventsRouter.get('/', eventController.get)
     .get('/archives', eventController.getAll)
     .get('/:id', eventController.getById)
-    .post('/',validationMiddleware(eventSchema), upload.single('image'), eventController.addEvent);
+    .post('/', upload.single('image'), validationMiddleware(eventSchema), eventController.addEvent);
 
 
 

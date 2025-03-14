@@ -61,3 +61,5 @@ VALUES
 ('Championnat Européen 2024', 'Compétition réunissant les meilleurs joueurs européens de Magic.', 128, 7, 5, 'image_european_championship_2024.jpg', '2024-09-15', '2024-09-17', false, 1),
 -- Tournoi Pauper Bruxelles
 ('Tournoi Pauper Bruxelles', 'Compétition pour les joueurs de Pauper à Bruxelles.', 64, 1, 8, 'image_pauper_brussels.jpg', '2024-05-10', '2024-05-10', false, 1);
+
+DROP TABLE categories, events, formats, inscriptions, users;

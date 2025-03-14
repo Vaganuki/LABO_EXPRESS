@@ -23,13 +23,6 @@ const eventSchema = yup.object({
         .required()
         .integer()
         .positive(),    
-    image: yup.mixed()
-        .test('fileSize','Image trop grosse t\'as capté',
-            value => value && value.size <= 200000000
-        )
-        .test('fileType','On aime pas trop les images comme toi par ici',
-            value => value && ['image/jpeg','image/png','image/gif'].includes(value.mimetype)
-        ),
     date_debut: yup.date()
         .required()
         .min(getMinDate())

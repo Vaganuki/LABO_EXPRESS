@@ -2,6 +2,7 @@ const yup = require('yup');
 
 const validationMiddleware = (schema) => async (req, res, next) => {
     try{
+        console.log(req.body);
         console.log('Dans le middleware')
         const data = await schema.validate(req.body, {abortEarly : false});
         req.body = data;

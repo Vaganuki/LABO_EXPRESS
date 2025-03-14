@@ -1,5 +1,6 @@
 const client = require('../config/database');
 const db = require('../models');
+const fs = require('fs');
 
 const eventController = {
     get : (req, res) => {
@@ -44,7 +45,6 @@ const eventController = {
         });
     },
     addEvent : async (req, res) => {
-        console.log('oui')
         const {name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur} = req.body;
         const event = await db.event.findOne({where: {
             name,
@@ -53,10 +53,11 @@ const eventController = {
         }});
 
         if(!event) {
-            const data = await db.event.create({name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur});
+            const data = await db.event.create({name, description, places_count, id_categorie, id_format, image: req.file.filename, date_debut, date_fin, annulation, id_createur});
             res.status(201).json(data.toJSON());
         }
         else{
+            fs.unlinkSync(__dirname+'/../public/images/'+req.file.filename);
             res.status(400).json({error: 'Cet event a déjà été créé'});
         }
     },
