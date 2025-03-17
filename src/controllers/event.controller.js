@@ -91,7 +91,6 @@ const eventController = {
         }});
         const image = req.file ? req.file.filename : null;
         if(!event) {
-            upload.single('image')
             const data = await db.event.create({name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur: req.user.id});
             res.status(201).json(data.toJSON());
         }
