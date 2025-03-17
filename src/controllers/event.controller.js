@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const client = require('../config/database');
 const db = require('../models');
 const fs = require('fs');
@@ -81,8 +81,6 @@ const eventController = {
         });
     },
     addEvent : async (req, res) => {
-        // res.json({Body : req.body, File: req.file, User: req.user});
-        // return
         const {name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation} = req.body;
         const event = await db.event.findOne({where: {
             name,
@@ -99,6 +97,23 @@ const eventController = {
             res.status(400).json({error: 'Cet event a déjà été créé'});
         }
     },
+    update : async (req, res) => {
+        const id = +req.params.id;
+        const event = await db.event.findOne( { where: { id } } );
+        if(event){
+            if(event.id_createur === req.user.id){
+                const {name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation} = req.body;
+                db.event.update({name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation},{where: {id}});
+                res.status(200).json(event.toJSON());
+            }
+            else{
+                res.status(400).json({error: `Wrong user`})
+            }
+        }
+        else{
+            res.status(400).json({error: `Event inexistant`});
+        }
+    }
 };
 
 module.exports = eventController;
