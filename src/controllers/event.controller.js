@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const client = require('../config/database');
 const db = require('../models');
 const fs = require('fs');
+const upload = require('../middlewares/multer.middleware');
 
 const eventController = {
     get : (req, res) => {
@@ -90,6 +91,7 @@ const eventController = {
         }});
         const image = req.file ? req.file.filename : null;
         if(!event) {
+            upload.single('image')
             const data = await db.event.create({name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur: req.user.id});
             res.status(201).json(data.toJSON());
         }
