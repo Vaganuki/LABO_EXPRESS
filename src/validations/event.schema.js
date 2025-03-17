@@ -18,10 +18,14 @@ const eventSchema = yup.object({
     id_categorie: yup.number()
         .required()
         .integer()
+        .min(1)
+        .max(10)
         .positive(),
     id_format: yup.number()
         .required()
         .integer()
+        .min(1)
+        .max(10)
         .positive(),    
     date_debut: yup.date()
         .required()
@@ -32,10 +36,10 @@ const eventSchema = yup.object({
         .required(),
     annulation: yup.boolean()
         .default(false),
-    id_createur: yup.number()
-        .integer()
-        .positive()
-        .required(),
+    // id_createur: yup.number()
+    //     .integer()
+    //     .positive()
+    //     .required(),
 });
 
 module.exports = eventSchema;
