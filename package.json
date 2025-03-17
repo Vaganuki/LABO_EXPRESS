@@ -1,7 +1,7 @@
 {
   "name": "labo_express",
   "version": "1.0.0",
-  "description": "",
+  "description": "API de création de tournois",
   "license": "ISC",
   "author": "Sleepy",
   "type": "commonjs",
@@ -14,13 +14,11 @@
   },
   "dependencies": {
     "argon2": "^0.41.1",
-    "body-parser": "^1.20.3",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.10.0",
     "path": "^0.12.7",
     "pg": "^8.14.0",
     "pg-hstore": "^2.3.4",
