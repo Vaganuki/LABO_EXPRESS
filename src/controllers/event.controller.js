@@ -2,18 +2,18 @@ const { Op, where } = require('sequelize');
 const client = require('../config/database');
 const db = require('../models');
 const fs = require('fs');
-const upload = require('../middlewares/multer.middleware');
 
 const eventController = {
     get : (req, res) => {
         const today = new Date();
+
         client.query('SELECT * FROM events WHERE date_debut > $1 ORDER BY date_debut;', [today], (err, result) => {
             if(err) {
-                console.log(err.stack)
-                res.send('Erreur de requête');
+                res.status(400).json({Erreur: `Erreyr de requête`}).send('Erreur de requête');
             }
             else{
-                res.render('events', {events: result.rows});
+                // res.render('events', {events: result.rows});
+                res.status(200).json({events: result.rows});
             }
         });
     },
@@ -41,14 +41,12 @@ const eventController = {
                     { description : { [Op.iLike]: `%${terme}%` } },
                 ];
             };
-
-            console.log(filters);
             
             const result = await db.event.findAll({
                 where: filters,
                 order: [['date_debut', 'ASC']]
             })
-            res.json(result);
+            res.status(200).json(result);
             // res.render('events_archives', {events: result});
         } catch (err) {
             console.error(`Erreur lors de la récupération des événements :`, err);
@@ -59,23 +57,24 @@ const eventController = {
         const id = +req.params.id;
         client.query('SELECT * FROM events WHERE id = $1', [id], (err, result) => {
             if(err){
-                console.log(err.stack);
-                res.send('Erreur de requête');
+                res.status(400).json({Erreur: `Erreur de requête`}).send('Erreur de requête');
             }
             else{
                 if(result.rows.length > 0){
                     const event = result.rows[0];
                     client.query('SELECT * FROM inscriptions WHERE id_event = $1', [id], (err, resultCount) => {
                         if(err){
-                            res.render('events_details', {event, placeRest: 'Erreur du calcul de places restantes'});
+                            // res.render('events_details', {event, placeRest: 'Erreur du calcul de places restantes'});
+                            res.status(200).json({Event_details: event, place_restante: 'Erreur du calcul de places restantes'})
                         }
                         else{
-                            res.render('events_details', {event, placeRest: event.places_count - resultCount.rowCount});
+                            // res.render('events_details', {event, placeRest: event.places_count - resultCount.rowCount});
+                            res.status(200).json({Event_details: event, place_restante: event.places_count - resultCount.rowCount})
                         }
                     });
                 }
                 else{
-                    res.send('Event non trouvé');
+                    res.status(404).json({Erreur: 'Not found'}).send('Event non trouvé');
                 }
             }
         });
@@ -107,11 +106,11 @@ const eventController = {
                 res.status(200).json(event.toJSON());
             }
             else{
-                res.status(400).json({error: `Wrong user`})
+                res.status(401).json({error: `Wrong user`})
             }
         }
         else{
-            res.status(400).json({error: `Event inexistant`});
+            res.status(404).json({error: `Event inexistant`});
         }
     },
     inscription : async (req, res) => {
@@ -128,11 +127,11 @@ const eventController = {
                 res.status(200).json('Inscription réussie')
             }
             else{
-                res.status(400).json({Error: `L'inscription a déjà été réalisée`});
+                res.status(409).json({Error: `L'inscription a déjà été réalisée`});
             }
         }
         else{
-            res.status(400).json({error: `Event inexistant`});
+            res.status(404).json({error: `Event inexistant`});
         }
     }
 };

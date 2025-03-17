@@ -3,9 +3,9 @@ const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 
 const userController = {
-    get : (req, res) => {
-        res.send('wip');
-    },
+    // get : (req, res) => {
+    //     res.send('wip');
+    // },
     addUser : async (req, res) => {
         const {nom, prenom, mail, mdp, ddn} = req.body;
 
@@ -35,7 +35,7 @@ const userController = {
                         expiresIn: '1d',
                         algorithm: 'HS256',
                     });
-                    res.json(token);
+                    res.status(202).json(token);
                 }
                 else{
                     res.status(401).json(`Email ou mot de passe incorrect`);
