@@ -8,10 +8,10 @@
         <img src="/images/<%= event.image %>" alt="<%= event.name %>">
         <p><%= event.name %></p>
         <p><%= event.description %></p>
-        <p><%= event.places_count %></p>
+        <p>Nombre de places : <%= event.places_count %></p>
+        <p>Places restantes : <%= placeRest %></p>
         <p><%= event.date_debut %></p>
         <p><%= event.date_fin %> </p>
-        <p><%= placeRest %></p>
     </div>
 </main>
 <%- include('./shared/footer') %>
