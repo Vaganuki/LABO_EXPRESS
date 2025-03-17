@@ -113,6 +113,27 @@ const eventController = {
         else{
             res.status(400).json({error: `Event inexistant`});
         }
+    },
+    inscription : async (req, res) => {
+        const id_event = +req.params.id;
+        const id_user = req.user.id;
+        const event = await db.event.findOne( { where: { id : id_event } } );
+        if(event){
+            const inscriptionExiste = await db.inscription.findOne( { where: {
+                id_event,
+                id_user
+            }});
+            if(!inscriptionExiste){
+                db.inscription.create({id_event,id_user});
+                res.status(200).json('Inscription réussie')
+            }
+            else{
+                res.status(400).json({Error: `L'inscription a déjà été réalisée`});
+            }
+        }
+        else{
+            res.status(400).json({error: `Event inexistant`});
+        }
     }
 };
 
