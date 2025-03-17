@@ -3,9 +3,9 @@ const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 
 const userController = {
-    // get : (req, res) => {
-    //     res.send('wip');
-    // },
+    get : (req, res) => {
+        res.send('wip');
+    },
     addUser : async (req, res) => {
         const {nom, prenom, mail, mdp, ddn} = req.body;
 
