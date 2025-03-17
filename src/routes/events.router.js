@@ -8,7 +8,5 @@ eventsRouter.get('/', eventController.get)
     .get('/archives', eventController.getAll)
     .get('/:id', eventController.getById)
     .post('/', upload.single('image'), validationMiddleware(eventSchema), eventController.addEvent);
-
-
-
+    
 module.exports = eventsRouter;

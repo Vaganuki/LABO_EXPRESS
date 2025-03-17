@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const client = require('../config/database');
 const db = require('../models');
 const fs = require('fs');
@@ -15,16 +16,43 @@ const eventController = {
             }
         });
     },
-    getAll : (req, res) => {
-        client.query('SELECT * FROM events ORDER BY date_fin DESC;', (err, result) => {
-            if(err) {
-                console.log(err.stack)
-                res.send('Erreur de requête');
-            }
-            else{
-                res.render('events_archives', {events: result.rows});
-            }
-        });
+    getAll : async (req, res) => {
+        try{
+            const {id_categorie, date_debut, date_fin, terme } = req.query;
+
+            const filters = {};
+
+            if(id_categorie){
+                filters.id_categorie = id_categorie;
+            };
+
+            if(date_debut && date_fin){
+                filters.date_debut = {[Op.between] : [date_debut, date_fin]};
+            } else if (date_debut) {
+                filters.date_debut = {[Op.gte]: date_debut};
+            } else if (date_fin) {
+                filters.date_fin = {[Op.lte]: date_fin};
+            };
+
+            if (terme) {
+                filters[Op.or] = [
+                    { name : { [Op.iLike]: `%${terme}%` } },
+                    { description : { [Op.iLike]: `%${terme}%` } },
+                ];
+            };
+
+            console.log(filters);
+            
+            const result = await db.event.findAll({
+                where: filters,
+                order: [['date_debut', 'ASC']]
+            })
+            res.json(result);
+            // res.render('events_archives', {events: result});
+        } catch (err) {
+            console.error(`Erreur lors de la récupération des événements :`, err);
+            res.status(500).json({error: `Une erreur est servenue lors de la récupération des données.`, details: err.message});
+        };
     },
     getById : (req, res) => {
         const id = +req.params.id;
