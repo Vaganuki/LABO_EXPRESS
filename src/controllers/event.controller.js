@@ -129,6 +129,10 @@ const eventController = {
             id_user
         });
         const encoreLibre = +event.places_count == result.length ? false : true ;
+        const user = await db.user.findOne({where: {id: req.user.id}});
+        if(!user){
+            res.status(400).json({error: `L'user n'a pas été créé`});
+        }
         if(event && encoreLibre){
             const inscriptionExiste = await db.inscription.findOne( { where: {
                 id_event,
