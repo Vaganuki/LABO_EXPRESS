@@ -16,9 +16,10 @@
                             "application/json":{
                                 "schema":{
                                     "properties":{
-
+                                        "type":"array",
+                                        "items":{"$ref":"#/components/schema/events"}
                                     }
-                            }
+                                }
                             }
                         }
                     },
@@ -31,103 +32,143 @@
                 }
             }
         },
-
-
-
-        "/login": {
-            "post": {
-                "tags": ["Authentication"],
-                "summary": "Retrieve token",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/login"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "properties": {
-                                    "token": { "type": "string" }
-                                }
-                            }
-                        }
+        "/events/archives":{
+            "get":{
+                "tags":["Events"],
+                "summary":"Retrieve every event with a filter",
+                "parameters":[
+                    {
+                        "name":"id_categorie",
+                        "in":"query",
+                        "description":"Filter par les ID de catégorie",
+                        "required":false,
+                        "schema":{"type": "integer"}
                     },
-                    "201": {
-                        "description": "UNAUTHORIZED"
+                    {
+                        "name":"id_format",
+                        "in":"query",
+                        "description":"Filter par les ID de formats",
+                        "required":false,
+                        "schema":{"type": "integer"}
+                    },
+                    {
+                        "name":"date_debut",
+                        "in":"query",
+                        "description":"Filter par la date de début (au format YYYY-MM-DD)",
+                        "required":false,
+                        "schema":{"type": "string", "format":"date"}
+                    },
+                    {
+                        "name":"date_fin",
+                        "in":"query",
+                        "description":"Filter par la date de fin (au format YYYY-MM-DD)",
+                        "required":false,
+                        "schema":{"type": "string", "format":"date"}
+                    },
+                    {
+                        "name":"terme",
+                        "in":"query",
+                        "description":"Cherche un terme à trouver dans les noms ou descriptions des événements.",
+                        "required":false,
+                        "schema":{"type": "string"}
                     }
-                }
-            }
-        },
-        "/movies": {
-            "get": {
-                "tags": ["Movies"],
-                "summary": "Retrieves the number of movies and the 10th first movies",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "count": {
-                                            "type": "integer"
-                                        },
-                                        "rows": {
-                                            "type": "array",
-                                            "items": { "$ref": "#/components/schemas/movies" }
-                                        }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "properties":{
+                                        "type":"array",
+                                        "items":{"$ref":"#/components/schema/events"}
                                     }
                                 }
                             }
                         }
+                    },
+                    "404":{
+                        "description":"Not found"
+                    },
+                    "500":{
+                        "description":"Servor error"
                     }
                 }
-            }
-        }
-    },
-    "components": {
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "jwt"
             }
         },
-        "schemas": {
-            "movies": {
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "title": {
-                        "type": "string"
-                    },
-                    "releaseYear": {
-                        "type": "integer"
-                    },
-                    "duration": {
-                        "type": "integer"
-                    },
-                    "nbActors": {
-                        "type": "integer"
+        "/events/{id}":{
+            "get":{
+                "tags":["Events"],
+                "summary":"Récupère un événement par son ID",
+                "description":"Donne un événement spécifique par son ID et le nombre de place qu'il lui reste",
+                "parameters":[
+                    {
+                        "name":"id",
+                        "in":"path",
+                        "description":"ID de l'événement",
+                        "required":true,
+                        "schema":{"type": "integer","example":1}
                     }
-                }
-            },
-            "login": {
-                "required": ["username", "password"],
-                "properties": {
-                    "username": { "type": "string" },
-                    "password": { "type": "string" }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "properties":{
+                                        "event":{
+                                            "type":"array",
+                                            "items":{"$ref":"#/components/schema/events"}
+                                        },
+                                        "place_restante":{
+                                            "type":"integer",
+                                            "description":"Nombre de places libres pour l'event"
+                                        }
+                                    },
+                                    "required":["event","place_resante"]
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description":"Not found"
+                    },
+                    "500":{
+                        "description":"Servor error"
+                    }
                 }
             }
         }
     },
-    "security": [{"bearerAuth": []}]
+    "components":{
+        "schema":{
+           "events":{
+                "type": "object",
+                "properties":{
+                    "id":{"type": "integer"},
+                    "name":{"type": "string"},
+                    "description":{"type": "string"},
+                    "places_count":{"type": "integer"},
+                    "id_categorie":{"type": "integer"},
+                    "id_format":{"type": "integer"},
+                    "image":{"type": "string"},
+                    "date_debut":{"type": "string", "format": "date-time"},
+                    "date_fin":{"type": "string", "format": "date-time"},
+                    "annulation":{"type": "boolean", "default": "false"},
+                    "id_createur":{"type": "integer"}
+                },
+                "required":[
+                    "name",
+                    "description",
+                    "places_count",
+                    "id_categorie",
+                    "id_format",
+                    "date_debut",
+                    "date_fin"
+                ]
+           } 
+        }
+    },
+   "security": [{"bearerAuth": []}]
 }
