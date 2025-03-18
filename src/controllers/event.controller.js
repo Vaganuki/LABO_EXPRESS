@@ -1,30 +1,37 @@
 const { Op } = require('sequelize');
-const client = require('../config/database');
 const db = require('../models');
 const fs = require('fs');
 
 const eventController = {
-    get : (req, res) => {
-        const today = new Date();
-
-        client.query('SELECT * FROM events WHERE date_debut > $1 ORDER BY date_debut;', [today], (err, result) => {
-            if(err) {
-                res.status(400).json({Erreur: `Erreur de requête`});
+    get : async (req, res) => {
+        try{
+            const events = await db.event.findAll({
+                where: {date_debut: { [Op.gte]: new Date() }},
+                order: [['date_debut', 'ASC']]
+            });
+            if(events){
+                res.status(200).json({events: events});
             }
             else{
-                // res.render('events', {events: result.rows});
-                res.status(200).json({events: result.rows});
+                res.status(404).json({error: `Not found`});
             }
-        });
+        } catch (err) {
+            console.error(`Erreur lors de la récupération des événements :`, err);
+            res.status(500).json({error: `Une erreur est servenue lors de la récupération des données.`, details: err.message});
+        };
     },
     getAll : async (req, res) => {
         try{
-            const {id_categorie, date_debut, date_fin, terme } = req.query;
+            const {id_categorie,id_format, date_debut, date_fin, terme } = req.query;
 
             const filters = {};
 
             if(id_categorie){
                 filters.id_categorie = id_categorie;
+            };
+
+            if(id_format){
+                filters.id_format = id_format;
             };
 
             if(date_debut && date_fin){
@@ -41,43 +48,32 @@ const eventController = {
                     { description : { [Op.iLike]: `%${terme}%` } },
                 ];
             };
-            
             const result = await db.event.findAll({
                 where: filters,
                 order: [['date_debut', 'ASC']]
             })
-            res.status(200).json(result);
-            // res.render('events_archives', {events: result});
+            res.status(200).json({events : result});
         } catch (err) {
             console.error(`Erreur lors de la récupération des événements :`, err);
             res.status(500).json({error: `Une erreur est servenue lors de la récupération des données.`, details: err.message});
         };
     },
-    getById : (req, res) => {
-        const id = +req.params.id;
-        client.query('SELECT * FROM events WHERE id = $1', [id], (err, result) => {
-            if(err){
-                res.status(400).json({Erreur: `Erreur de requête`});
+    getById : async (req, res) => {
+        try{
+            const id = +req.params.id;
+            const event = await db.event.findOne( { where: { id } } );
+            const placesPrises = await db.inscription.findAll({ where : {id_event : id}});
+
+            if(event){
+                res.status(200).json({event: event, place_restante: event.places_count - placesPrises.length});
             }
             else{
-                if(result.rows.length > 0){
-                    const event = result.rows[0];
-                    client.query('SELECT * FROM inscriptions WHERE id_event = $1', [id], (err, resultCount) => {
-                        if(err){
-                            // res.render('events_details', {event, placeRest: 'Erreur du calcul de places restantes'});
-                            res.status(200).json({Event_details: event, place_restante: 'Erreur du calcul de places restantes'})
-                        }
-                        else{
-                            // res.render('events_details', {event, placeRest: event.places_count - resultCount.rowCount});
-                            res.status(200).json({Event_details: event, place_restante: event.places_count - resultCount.rowCount})
-                        }
-                    });
-                }
-                else{
-                    res.status(404).json({Erreur: 'Not found'});
-                }
+                res.status(404).json({error: `Not found`});
             }
-        });
+        } catch (err) {
+            console.error(`Erreur lors de la récupération des événements :`, err);
+            res.status(500).json({error: `Une erreur est servenue lors de la récupération des données.`, details: err.message});
+        };
     },
     addEvent : async (req, res) => {
         const {name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation} = req.body;
@@ -98,7 +94,8 @@ const eventController = {
             }
             if(!user){
                 res.status(400).json({error: `L'user n'a pas été créé`});
-            }else{
+            }
+            else{
                 res.status(400).json({error: 'Cet event a déjà été créé'});
             }
         }
