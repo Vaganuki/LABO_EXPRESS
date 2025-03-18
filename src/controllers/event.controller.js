@@ -1,4 +1,4 @@
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 const client = require('../config/database');
 const db = require('../models');
 const fs = require('fs');
@@ -9,7 +9,7 @@ const eventController = {
 
         client.query('SELECT * FROM events WHERE date_debut > $1 ORDER BY date_debut;', [today], (err, result) => {
             if(err) {
-                res.status(400).json({Erreur: `Erreyr de requête`}).send('Erreur de requête');
+                res.status(400).json({Erreur: `Erreur de requête`});
             }
             else{
                 // res.render('events', {events: result.rows});
@@ -57,7 +57,7 @@ const eventController = {
         const id = +req.params.id;
         client.query('SELECT * FROM events WHERE id = $1', [id], (err, result) => {
             if(err){
-                res.status(400).json({Erreur: `Erreur de requête`}).send('Erreur de requête');
+                res.status(400).json({Erreur: `Erreur de requête`});
             }
             else{
                 if(result.rows.length > 0){
@@ -74,7 +74,7 @@ const eventController = {
                     });
                 }
                 else{
-                    res.status(404).json({Erreur: 'Not found'}).send('Event non trouvé');
+                    res.status(404).json({Erreur: 'Not found'});
                 }
             }
         });
@@ -86,14 +86,21 @@ const eventController = {
             id_categorie,
             date_debut
         }});
+        const user = await db.user.findOne({where: {id: req.user.id}});
         const image = req.file ? req.file.filename : null;
-        if(!event) {
+        if(!event && user) {
             const data = await db.event.create({name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur: req.user.id});
             res.status(201).json(data.toJSON());
         }
         else{
-            fs.unlinkSync(__dirname+'/../public/images/'+req.file.filename);
-            res.status(400).json({error: 'Cet event a déjà été créé'});
+            if(image!= null){
+                fs.unlinkSync(__dirname+'/../public/images/'+req.file.filename);
+            }
+            if(!user){
+                res.status(400).json({error: `L'user n'a pas été créé`});
+            }else{
+                res.status(400).json({error: 'Cet event a déjà été créé'});
+            }
         }
     },
     update : async (req, res) => {
@@ -117,7 +124,12 @@ const eventController = {
         const id_event = +req.params.id;
         const id_user = req.user.id;
         const event = await db.event.findOne( { where: { id : id_event } } );
-        if(event){
+        const result = await db.inscription.findAll( { where:
+            id_event,
+            id_user
+        });
+        const encoreLibre = +event.places_count == result.length ? false : true ;
+        if(event && encoreLibre){
             const inscriptionExiste = await db.inscription.findOne( { where: {
                 id_event,
                 id_user
@@ -131,7 +143,12 @@ const eventController = {
             }
         }
         else{
-            res.status(404).json({error: `Event inexistant`});
+            if(!encoreLibre){
+                res.status(409).json({Error: `Plus aucune place libre dans l'event`})
+            }
+            else{
+                res.status(404).json({error: `Event inexistant`});
+            }
         }
     }
 };

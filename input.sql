@@ -64,4 +64,4 @@ VALUES
 
 INSERT INTO inscriptions (id_event, id_user) VALUES ('23','1');
 INSERT INTO inscriptions (id_event, id_user) VALUES ('23','10');
-DROP TABLE categories, events, formats, inscriptions, users;
+DROP TABLE events, inscriptions, users;
