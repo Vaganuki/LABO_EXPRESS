@@ -1,5 +1,4 @@
 .env
 node_modules
-users.txt
-input
+get_ignored
 ./public/images
