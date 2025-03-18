@@ -1,4 +1,4 @@
 .env
 node_modules
 get_ignored
-./public/images
+src/public/images
