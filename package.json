@@ -7,6 +7,7 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
+    "start": "node --env-file=.env ./src/app.js",
     "dev": "nodemon --env-file=.env ./src/app.js"
   },
   "devDependencies": {
@@ -22,6 +23,7 @@
     "pg": "^8.14.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.6",
+    "swagger-ui-express": "^5.0.1",
     "yup": "^1.6.1"
   }
 }

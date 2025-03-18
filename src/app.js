@@ -3,9 +3,13 @@ const express = require('express');
 const app = express();
 const router = require('./routes');
 const JwtMiddleware = require('./middlewares/jwt.middleware');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDoc = require('../swagger.json');
 
 const db = require('./models/index');
 db.sequelize.sync();
+
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDoc) );
 
 app.use(express.json());
 app.use(JwtMiddleware);

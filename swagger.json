@@ -1,0 +1,133 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "TOURNAMENT API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/events": {
+            "get":{
+                "tags":["Events"],
+                "summary":"Retrieve every event starting today",
+                "responses":{
+                    "200":{
+                        "description":"OK",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "properties":{
+
+                                    }
+                            }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description":"Not found"
+                    },
+                    "500":{
+                        "description":"Servor error"
+                    }
+                }
+            }
+        },
+
+
+
+        "/login": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "Retrieve token",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/login"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "properties": {
+                                    "token": { "type": "string" }
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "UNAUTHORIZED"
+                    }
+                }
+            }
+        },
+        "/movies": {
+            "get": {
+                "tags": ["Movies"],
+                "summary": "Retrieves the number of movies and the 10th first movies",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer"
+                                        },
+                                        "rows": {
+                                            "type": "array",
+                                            "items": { "$ref": "#/components/schemas/movies" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "jwt"
+            }
+        },
+        "schemas": {
+            "movies": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "releaseYear": {
+                        "type": "integer"
+                    },
+                    "duration": {
+                        "type": "integer"
+                    },
+                    "nbActors": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "login": {
+                "required": ["username", "password"],
+                "properties": {
+                    "username": { "type": "string" },
+                    "password": { "type": "string" }
+                }
+            }
+        }
+    },
+    "security": [{"bearerAuth": []}]
+}
