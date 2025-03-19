@@ -118,38 +118,44 @@ const eventController = {
         }
     },
     inscription : async (req, res) => {
-        const id_event = +req.params.id;
-        const id_user = req.user.id;
-        const event = await db.event.findOne( { where: { id : id_event } } );
-        const result = await db.inscription.findAll( { where:
-            id_event,
-            id_user
-        });
-        const encoreLibre = +event.places_count == result.length ? false : true ;
-        const user = await db.user.findOne({where: {id: req.user.id}});
-        if(!user){
-            res.status(400).json({error: `L'user n'a pas été créé`});
-        }
-        if(event && encoreLibre){
-            const inscriptionExiste = await db.inscription.findOne( { where: {
-                id_event,
-                id_user
-            }});
-            if(!inscriptionExiste){
-                db.inscription.create({id_event,id_user});
-                res.status(200).json('Inscription réussie')
-            }
-            else{
-                res.status(409).json({Error: `L'inscription a déjà été réalisée`});
-            }
-        }
-        else{
-            if(!encoreLibre){
-                res.status(409).json({Error: `Plus aucune place libre dans l'event`})
+        try {            
+            const id_event = +req.params.id;
+            const id_user = req.user.id;
+            const event = await db.event.findOne( { where: { id : id_event } } );
+            if(event){
+                const result = await db.inscription.findAll( { where:
+                    id_event,
+                    id_user
+                });
+                const encoreLibre = +event.places_count == result.length ? false : true ;
+                const user = await db.user.findOne({where: {id: req.user.id}});
+                if(!user){
+                    res.status(400).json({error: `L'user n'a pas été créé`});
+                }
+                if(encoreLibre){
+                    const inscriptionExiste = await db.inscription.findOne( { where: {
+                    id_event,
+                    id_user
+                }});
+                if(!inscriptionExiste){
+                    db.inscription.create({id_event,id_user});
+                    res.status(200).json('Inscription réussie')
+                }
+                else{
+                    res.status(409).json({Error: `L'inscription a déjà été réalisée`});
+                }
+                }
+                else{
+                    res.status(409).json({Error: `Plus aucune place libre dans l'event`})
+                }
             }
             else{
                 res.status(404).json({error: `Event inexistant`});
             }
+        }
+        catch (error) {
+            console.error(`Erreur lors de la récupération des événements :`, error);
+            res.status(500).json({error: `Une erreur est servenue lors de la récupération des données.`, details: error.message});            
         }
     }
 };
