@@ -10,6 +10,6 @@ eventsRouter.get('/', eventController.get)
     .get('/:id', eventController.getById)
     .post('/:id/inscription', JwtMiddleware, eventController.inscription)
     .put('/:id/edit', JwtMiddleware, upload.single('image'), validationMiddleware(eventSchema), eventController.update)
-    .post('/',JwtMiddleware, upload.single('image'), validationMiddleware(eventSchema), eventController.addEvent);
+    .post('/create',JwtMiddleware, upload.single('image'), validationMiddleware(eventSchema), eventController.addEvent);
 
 module.exports = eventsRouter;

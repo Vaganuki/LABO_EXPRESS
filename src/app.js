@@ -9,7 +9,7 @@ const swaggerDoc = require('../swagger.json');
 const db = require('./models/index');
 db.sequelize.sync();
 
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDoc) );
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc) );
 
 app.use(express.json());
 app.use(JwtMiddleware);

@@ -36,10 +36,10 @@ const eventSchema = yup.object({
         .required(),
     annulation: yup.boolean()
         .default(false),
-    // id_createur: yup.number()
-    //     .integer()
-    //     .positive()
-    //     .required(),
+        // id_createur: yup.number()
+        //     .integer()
+        //     .positive()
+        //     .required(),
 });
 
 module.exports = eventSchema;

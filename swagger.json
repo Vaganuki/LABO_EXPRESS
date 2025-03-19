@@ -2,9 +2,80 @@
     "openapi": "3.1.0",
     "info": {
         "title": "TOURNAMENT API",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "description":"API pour gérer des tournois (principalement de TCG)"
     },
     "paths": {
+        "/users/sign_up":{
+            "post":{
+                "tags":["Users"],
+                "summary": "Créer un nouvel utilisateur",
+                "description":"Permet de créer un utilisateur avec son nom, prénom, email, mot de passe et date de naissance.",
+                "requestBody":{
+                    "required":true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref":"#/components/schema/users"
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "201":{
+                        "description":"Utilisateur créé avec succès",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schema/users"
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Email déjà utilisé ou validation échouée"
+                    },
+                    "500":{
+                        "description":"Erreur serveur"
+                    }
+                }
+            }
+        },
+        "/users/login":{
+            "post":{
+                "tags":["Users"],
+                "summary":"Renvoie un token d'identifiant d'un user",
+                "requestBody":{
+                    "required":true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref":"#/components/schema/login"
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "202":{
+                        "description":"Connexion réussie, retourne un token JWT",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"string",
+                                    "example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description":"Email ou mot de passe incorrect"
+                    },
+                    "500":{
+                        "description":"Servor error"
+                    }
+                }
+            }
+        },
         "/events": {
             "get":{
                 "tags":["Events"],
@@ -28,6 +99,48 @@
                     },
                     "500":{
                         "description":"Servor error"
+                    }
+                }
+            }
+        },
+        "/events/create":{
+            "post":{
+                "tags":["Events"],
+                "summary":"Créer un événement",
+                "description":"Cette route permet de créer un nouvel événement avec les informations fournies et une image (optionnelle).",
+                "security":[
+                    {
+                        "BearerAuth":[]
+                    }
+                ],
+                "requestBody":{
+                    "content":{
+                        "multipart/form-data":{
+                            "schema":{
+                                "$ref":"#/components/schema/eventCreate"
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "201":{
+                        "description":"Event créé avec succès",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schema/events"
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Erreur lors de la création de l'événement (Event déjà créé ou autre erreur de validation)"
+                    },
+                    "401":{
+                        "description":"Utilisateur non authentifié"
+                    },
+                    "500":{
+                        "description":"Erreur serveur"
                     }
                 }
             }
@@ -139,9 +252,222 @@
                     }
                 }
             }
+        },
+        "/events/{id}/inscription":{
+            "post":{
+                "tags":["Events"],
+                "summary":"Inscription d'un user via son ID et celui d'un event",
+                "description":" Inscrit un utilisateur à un événement via l'ID de l'événement et l'ID de l'utilisateur. (déjà connecté)",
+                "security":[
+                    {
+                        "BearerAuth":[]
+                    }
+                ],
+                "parameters":[
+                    {
+                        "name":"id",
+                        "in":"path",
+                        "description":"ID de l'événement",
+                        "required":true,
+                        "schema":{"type": "integer","example":1}
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"Inscription réussie",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "message": {
+                                            "type":"string",
+                                            "example":"Inscription réussie"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"User not found",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "error": {
+                                            "type":"string",
+                                            "example":"L'utilisateur n'a pas été trouvé"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description":"Not found",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "error": {
+                                            "type":"string",
+                                            "example":"Not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "409":{
+                        "description":"Conflit d'inscription",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "error": {
+                                            "type":"string",
+                                            "example":"Inscription déjà réalisée"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500":{
+                    "description":"Erreur serveur",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"object",
+                                    "properties":{
+                                        "error": {
+                                            "type":"string",
+                                            "example":"erreur serveur"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/events/{id}/edit":{
+            "put":{
+                "tags":["Events"],
+                "summary":"Met à jour un event",
+                "description":"Cette route permet de mettre à jour un événement existant si l'utilisateur est le créateur de l'événement.",
+                "security":[
+                    {
+                        "BearerAuth":[]
+                    }
+                ],
+                "parameters":[
+                    {
+                        "name":"name",
+                        "description":"Nom de l'event",
+                        "in":"formData",
+                        "required":false,
+                        "type":"string"
+                    },
+                    {
+                        "name":"description",
+                        "description":"Description de l'event",
+                        "in":"formData",
+                        "required":false,
+                        "type":"string"
+                    },
+                    {
+                        "name":"places_count",
+                        "description":"Nombre de places disponnibles",
+                        "in":"formData",
+                        "required":false,
+                        "type":"integer"
+                    },
+                    {
+                        "name":"id_categorie",
+                        "description":"ID de la categorie de l'event (cf. categories)",
+                        "in":"formData",
+                        "required":false,
+                        "type":"integer"
+                    },
+                    {
+                        "name":"id_format",
+                        "description":"ID du format de l'event (cf. formats)",
+                        "in":"formData",
+                        "required":false,
+                        "type":"string"
+                    },
+                    {
+                        "name":"date_debut",
+                        "description":"Date et heure de début de l'event",
+                        "in":"formData",
+                        "required":false,
+                        "type":"string",
+                        "format":"date-time"
+                    },
+                    {
+                        "name":"date_fin",
+                        "description":"Date et heure de fin de l'event",
+                        "in":"formData",
+                        "required":false,
+                        "type":"string",
+                        "format":"date-time"
+                    },
+                    {
+                        "name":"annulation",
+                        "description":"Si l'event est annulé",
+                        "in":"formData",
+                        "required":false,
+                        "type":"boolean"
+                    },
+                    {
+                        "name":"image",
+                        "description":"Image de l'event",
+                        "in":"formData",
+                        "required":false,
+                        "type":"file"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"Event mis à jours avec succès",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schema/events"
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description":"Erreur de validation"
+                    },
+                    "401":{
+                        "description":"Utilisateur non authorisé à modifier cet event"
+                    },
+                    "404":{
+                        "description":"Event non trouvé"
+                    },
+                    "500":{
+                        "description":"Erreur serveur"
+                    }
+                }
+            }
         }
     },
     "components":{
+        "securitySchemes":{
+            "BearerAuth":{
+                "type":"http",
+                "scheme":"bearer",
+                "bearerFormat":"JWT"
+            }
+        },
         "schema":{
            "events":{
                 "type": "object",
@@ -152,7 +478,7 @@
                     "places_count":{"type": "integer"},
                     "id_categorie":{"type": "integer"},
                     "id_format":{"type": "integer"},
-                    "image":{"type": "string"},
+                    "image":{"type": "string", "format":"url"},
                     "date_debut":{"type": "string", "format": "date-time"},
                     "date_fin":{"type": "string", "format": "date-time"},
                     "annulation":{"type": "boolean", "default": "false"},
@@ -167,8 +493,58 @@
                     "date_debut",
                     "date_fin"
                 ]
-           } 
+           },
+           "eventCreate":{
+            "type":"object",
+            "properties":{
+                "name":{"type":"string","description":"Nom de l'event","in":"formData"},
+                "description":{"type":"string","description":"Description de l'event","in":"formData"},
+                "places_count":{"type":"integer","description":"Nombre de places disponnibles","in":"formData"},
+                "id_categorie":{"type":"integer","description":"ID de la categorie de l'event (cf. categories)","in":"formData"},
+                "id_format":{"type":"integer","description":"ID du format de l'event (cf. formats)","in":"formData"},
+                "date_debut":{"type":"date","description":"Date et heure de début de l'event","in":"formData","format":"date-time"},
+                "date_fin":{"type":"date","description":"Date et heure de fin de l'event","in":"formData","format":"date-time"},
+                "annulation":{"type":"boolean","description":"Si l'event est annulé (Faux par défaut)","in":"formData"},
+                "image":{"type":"file","description":"Image de l'event","in":"formData"}
+            },
+            "required":[
+                "name",
+                "description",
+                "places_count",
+                "id_categorie",
+                "id_format",
+                "date_debut",
+                "date_fin"
+            ]
+           },
+           "users":{
+            "type":"object",
+            "properties":{
+                "id":{"type": "integer"},
+                "nom":{"type": "string", "example": "Doe"},
+                "prenom":{"type": "string", "example": "John"},
+                "mail":{"type": "string", "example": "example@mail.com"},
+                "mdp":{"type":"string", "minLength": 8, "pattern": "^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]).{8,}$", "example": "Password1234!"},
+                "ddn":{"type": "string", "format": "date-time"}
+            },
+            "required":[
+                "nom",
+                "prenom",
+                "mail",
+                "mdp"
+            ]
+           },
+           "login":{
+            "type":"object",
+            "properties":{
+                "mail":{"type":"string","example":"example@mail.com"},
+                "mdp":{"type":"string", "minLength": 8, "pattern": "^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]).{8,}$", "example": "Password1234!"}
+            },
+            "required":[
+                "mail","mdp"
+            ]
+           }
         }
     },
-   "security": [{"bearerAuth": []}]
+   "security": [{"jwtAuth": []}]
 }
