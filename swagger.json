@@ -368,71 +368,22 @@
                 ],
                 "parameters":[
                     {
-                        "name":"name",
-                        "description":"Nom de l'event",
-                        "in":"formData",
-                        "required":false,
-                        "type":"string"
-                    },
-                    {
-                        "name":"description",
-                        "description":"Description de l'event",
-                        "in":"formData",
-                        "required":false,
-                        "type":"string"
-                    },
-                    {
-                        "name":"places_count",
-                        "description":"Nombre de places disponnibles",
-                        "in":"formData",
-                        "required":false,
-                        "type":"integer"
-                    },
-                    {
-                        "name":"id_categorie",
-                        "description":"ID de la categorie de l'event (cf. categories)",
-                        "in":"formData",
-                        "required":false,
-                        "type":"integer"
-                    },
-                    {
-                        "name":"id_format",
-                        "description":"ID du format de l'event (cf. formats)",
-                        "in":"formData",
-                        "required":false,
-                        "type":"string"
-                    },
-                    {
-                        "name":"date_debut",
-                        "description":"Date et heure de début de l'event",
-                        "in":"formData",
-                        "required":false,
-                        "type":"string",
-                        "format":"date-time"
-                    },
-                    {
-                        "name":"date_fin",
-                        "description":"Date et heure de fin de l'event",
-                        "in":"formData",
-                        "required":false,
-                        "type":"string",
-                        "format":"date-time"
-                    },
-                    {
-                        "name":"annulation",
-                        "description":"Si l'event est annulé",
-                        "in":"formData",
-                        "required":false,
-                        "type":"boolean"
-                    },
-                    {
-                        "name":"image",
-                        "description":"Image de l'event",
-                        "in":"formData",
-                        "required":false,
-                        "type":"file"
+                        "name":"id",
+                        "in":"path",
+                        "description":"ID de l'événement",
+                        "required":true,
+                        "schema":{"type": "integer","example":1}
                     }
                 ],
+                "requestBody":{
+                    "content":{
+                        "multipart/form-data":{
+                            "schema":{
+                                "$ref":"#/components/schema/eventEdit"
+                            }
+                        }
+                    }
+                },
                 "responses":{
                     "200":{
                         "description":"Event mis à jours avec succès",
@@ -516,6 +467,20 @@
                 "date_debut",
                 "date_fin"
             ]
+           },
+           "eventEdit":{
+            "type":"object",
+            "properties":{
+                "name":{"type":"string","description":"Nom de l'event","in":"formData"},
+                "description":{"type":"string","description":"Description de l'event","in":"formData"},
+                "places_count":{"type":"integer","description":"Nombre de places disponnibles","in":"formData"},
+                "id_categorie":{"type":"integer","description":"ID de la categorie de l'event (cf. categories)","in":"formData"},
+                "id_format":{"type":"integer","description":"ID du format de l'event (cf. formats)","in":"formData"},
+                "date_debut":{"type":"date","description":"Date et heure de début de l'event","in":"formData","format":"date-time"},
+                "date_fin":{"type":"date","description":"Date et heure de fin de l'event","in":"formData","format":"date-time"},
+                "annulation":{"type":"boolean","description":"Si l'event est annulé","in":"formData"},
+                "image":{"type":"file","description":"Image de l'event","in":"formData"}
+            }
            },
            "users":{
             "type":"object",
