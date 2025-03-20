@@ -76,46 +76,56 @@ const eventController = {
         };
     },
     addEvent : async (req, res) => {
-        const {name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation} = req.body;
-        const event = await db.event.findOne({where: {
-            name,
-            id_categorie,
-            date_debut
-        }});
-        const user = await db.user.findOne({where: {id: req.user.id}});
-        const image = req.file ? req.file.filename : null;
-        if(!event && user) {
-            const data = await db.event.create({name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur: req.user.id});
-            res.status(201).json(data.toJSON());
-        }
-        else{
-            if(image!= null){
-                fs.unlinkSync(__dirname+'/../public/images/'+req.file.filename);
-            }
-            if(!user){
-                res.status(400).json({error: `L'user n'a pas été créé`});
+        try{
+            const {name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation} = req.body;
+            const event = await db.event.findOne({where: {
+                name,
+                id_categorie,
+                date_debut
+            }});
+            const user = await db.user.findOne({where: {id: req.user.id}});
+            const image = req.file ? req.file.filename : null;
+            if(!event && user) {
+                const data = await db.event.create({name, description, places_count, id_categorie, id_format, image, date_debut, date_fin, annulation, id_createur: req.user.id});
+                res.status(201).json(data.toJSON());
             }
             else{
-                res.status(400).json({error: 'Cet event a déjà été créé'});
+                if(image!= null){
+                    fs.unlinkSync(__dirname+'/../public/images/'+req.file.filename);
+                }
+                if(!user){
+                    res.status(400).json({error: `L'user n'a pas été créé`});
+                }
+                else{
+                    res.status(400).json({error: 'Cet event a déjà été créé'});
+                }
             }
-        }
+        } catch (err) {
+            console.error(`Erreur lors de la récupération des événements :`, err);
+            res.status(500).json({error: `Une erreur est servenue lors de la récupération des données.`, details: err.message});
+        };
     },
     update : async (req, res) => {
-        const id = +req.params.id;
-        const event = await db.event.findOne( { where: { id } } );
-        if(event){
-            if(event.id_createur === req.user.id){
-                const {name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation} = req.body;
-                db.event.update({name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation},{where: {id}});
-                res.status(200).json(event.toJSON());
+        try{
+            const id = +req.params.id;
+            const event = await db.event.findOne( { where: { id } } );
+            if(event){
+                if(event.id_createur === req.user.id){
+                    const {name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation} = req.body;
+                    db.event.update({name, description, places_count, id_categorie, id_format, date_debut, date_fin, annulation},{where: {id}});
+                    res.status(200).json(event.toJSON());
+                }
+                else{
+                    res.status(401).json({error: `Wrong user`})
+                }
             }
             else{
-                res.status(401).json({error: `Wrong user`})
+                res.status(404).json({error: `Event inexistant`});
             }
-        }
-        else{
-            res.status(404).json({error: `Event inexistant`});
-        }
+        } catch (err) {
+            console.error(`Erreur lors de la récupération des événements :`, err);
+            res.status(500).json({error: `Une erreur est servenue lors de la récupération des données.`, details: err.message});
+        };
     },
     inscription : async (req, res) => {
         try {            
