@@ -3,42 +3,42 @@ const { DataTypes } = require("sequelize");
 const userModel = (sequelize) => {
     const user = sequelize.define(
         "user",
-        {   
-            id:{
+        {
+            id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
                 unique: true,
             },
-            nom:{
+            nom: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            prenom:{
+            prenom: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            mail:{
+            mail: {
                 allowNull: false,
                 type: DataTypes.STRING,
             },
-            mdp:{
+            mdp: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            ddn:{
+            ddn: {
                 type: DataTypes.DATE,
             },
         },
         {
-            tableName:'users',
+            tableName: 'users',
             timestamps: false,
         }
     );
 
     user.associate = (models) => {
         user.hasMany(models.inscription, {
-            foreignKey:'id_user'
+            foreignKey: 'id_user'
         });
     };
 

@@ -1,4 +1,4 @@
-const {PORT} = process.env;
+const { PORT } = process.env;
 const express = require('express');
 const app = express();
 const router = require('./routes');
@@ -7,9 +7,9 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDoc = require('../swagger.json');
 
 const db = require('./models/index');
-db.sequelize.sync();
+db.sequelize.sync(); // à mettre dans un ctrller system sync
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc) );
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.use(express.json());
 app.use(JwtMiddleware);

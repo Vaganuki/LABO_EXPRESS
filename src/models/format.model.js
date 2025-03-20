@@ -1,16 +1,16 @@
-const {DataTypes } = require("sequelize");
+const { DataTypes } = require("sequelize");
 
 const formatModel = (Sequelize) => {
     const format = Sequelize.define(
         "format",
         {
-            id:{
+            id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
                 unique: true,
             },
-            name:{
+            name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },

@@ -27,9 +27,9 @@ const inscriptionModel = (Sequelize) => {
     );
 
     inscription.associate = (models) => {
-        inscription.belongsTo(models.event, {
-            foreignKey:'id_event',
-        });
+        // inscription.belongsTo(models.event, {
+        //     foreignKey:'id_event',
+        // });
         inscription.belongsTo(models.user, {
             foreignKey:'id_user',
         });

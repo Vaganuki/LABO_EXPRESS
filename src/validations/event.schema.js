@@ -26,7 +26,7 @@ const eventSchema = yup.object({
         .integer()
         .min(1)
         .max(10)
-        .positive(),    
+        .positive(),
     date_debut: yup.date()
         .required()
         .min(getMinDate())
@@ -36,10 +36,10 @@ const eventSchema = yup.object({
         .required(),
     annulation: yup.boolean()
         .default(false),
-        // id_createur: yup.number()
-        //     .integer()
-        //     .positive()
-        //     .required(),
+    // id_createur: yup.number()
+    //     .integer()
+    //     .positive()
+    //     .required(),
 });
 
 module.exports = eventSchema;

@@ -1,14 +1,14 @@
-const {DB_USER} = process.env;
-const {DB_PASSWORD} = process.env;
-const {DB_NAME} = process.env;
-const {Client} = require('pg');
+const { DB_USER } = process.env;
+const { DB_PASSWORD } = process.env;
+const { DB_NAME } = process.env;
+const { Client } = require('pg');
 
-const client = new Client ({
-    host : 'localhost',
-    port : 5432,
-    user : DB_USER,
-    password : DB_PASSWORD,
-    database : DB_NAME
+const client = new Client({
+    host: 'localhost',
+    port: 5432,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME
 });
 
 client.connect()

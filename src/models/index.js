@@ -27,4 +27,11 @@ const db = {
     inscription: inscriptionBuilder(sequelize),
 };
 
+db.event.hasMany(db.inscription,{
+    foreignKey:'id_event',
+});
+ db.inscription.belongsTo(db.event, {
+    foreignKey:'id_event',
+});
+
 module.exports = db;

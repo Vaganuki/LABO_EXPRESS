@@ -1,16 +1,16 @@
-const {DataTypes } = require("sequelize");
+const { DataTypes } = require("sequelize");
 
 const categorieModel = (Sequelize) => {
     const categorie = Sequelize.define(
         "categorie",
         {
-            id:{
+            id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
                 unique: true,
             },
-            name:{
+            name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
