@@ -20,13 +20,7 @@ const formatModel = (Sequelize) => {
             timestamps: false,
         }
     );
-
-    format.associate = (models) => {
-        format.hasMany(models.event, {
-            foreignKey: 'id_format',
-        });
-    };
-
+    
     return format;
 };
 

@@ -61,18 +61,6 @@ const eventModel = (Sequelize) => {
         }
     );
 
-    event.associate = (models) => {
-        event.belongsTo(models.categorie, {
-            foreignKey: 'id_categorie',
-        });
-        event.belongsTo(models.format, {
-            foreignKey: 'id_format',
-        });
-        // event.hasMany(models.inscription,{
-        //     foreignKey:'id_event',
-        // });
-    };
-
     return event;
 };
 

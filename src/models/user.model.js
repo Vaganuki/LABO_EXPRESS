@@ -36,12 +36,6 @@ const userModel = (sequelize) => {
         }
     );
 
-    user.associate = (models) => {
-        user.hasMany(models.inscription, {
-            foreignKey: 'id_user'
-        });
-    };
-
     return user;
 };
 

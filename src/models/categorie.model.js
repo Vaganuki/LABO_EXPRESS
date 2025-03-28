@@ -21,12 +21,6 @@ const categorieModel = (Sequelize) => {
         }
     );
 
-    categorie.associate = (models) => {
-        categorie.hasMany(models.event, {
-            foreignKey: 'id_categorie',
-        });
-    };
-
     return categorie;
 };
 
