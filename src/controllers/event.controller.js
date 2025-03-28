@@ -4,9 +4,15 @@ const fs = require('fs');
 
 const eventController = {
 	getAll: async (req, res) => {
+
+		const { page = 1, limit = 15 } = req.query;
+		const offset = (+page - 1) * +limit;
+
 		try {
 			const events = await db.event.findAll({
 				where: { date_debut: { [Op.gte]: new Date() } },
+				limit: limit,
+				offset: offset,
 				order: [['date_debut', 'ASC']]
 			});
 			if (events) {

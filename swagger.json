@@ -86,6 +86,29 @@
                     "Events"
                 ],
                 "summary": "Retrieve every event starting today",
+                "description": "Permet de récupérer une liste d'événements avec les options de pagination (limit, offset, page).",
+                "parameters":[
+                    {
+                        "name":"page",
+                        "in":"query",
+                        "description":"Numéro de la page",
+                        "required": false,
+                        "schema":{
+                            "type":"integer",
+                            "default":1
+                        }
+                    },
+                    {
+                        "name":"limit",
+                        "in":"query",
+                        "description":"Champ sur lequel trier les événements (ex: createdAt, name, etc.)",
+                        "required":false,
+                        "schema":{
+                            "type":"integer",
+                            "default":15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
