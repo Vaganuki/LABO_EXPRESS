@@ -13,21 +13,23 @@ const userSchema = yup.object({
         .required()
         .email(),
     mdp: yup.string()
-        .required()
+        .required('Veuillez entrez un mot de passe')
         .min(8)
-        .test('isValidPass', 'Mdp pas valide', (value, context) => {
+        .test('isValidPass', 'Le mot de passe n\'est pas valide', (value) => {
             const hasUpperCase = /[A-Z]/.test(value);
+            
             const hasNumber = /[0-9]/.test(value);
+            
             const hasLowerCase = /[a-z]/.test(value);
+            
             const hasSymbole = /["!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"]/.test(value);
-            let validConditions = 0;
-            const numberOfMustBeValidConditions = 3;
-            const conditions = [hasUpperCase, hasNumber, hasLowerCase, hasSymbole];
-            conditions.forEach(condition => (condition ? validConditions++ : null))
-            if (validConditions >= numberOfMustBeValidConditions) {
-                return true;
-            }
-            return false;
+            
+            const regexForSequentialChars = /(0123456789|abcdefghijklmnopqrstuvwxyz|!@#\$%\^&\*\(\)_\+\|<>\?\/\\,\.\-)([A-Z]{3,})/;
+            const hasSequentialChars = regexForSequentialChars.test(value);
+            
+            if (hasSequentialChars) return false;
+
+            return hasUpperCase && hasNumber && hasLowerCase && hasSymbole;
         }),
     ddn: yup.date(),
 });
