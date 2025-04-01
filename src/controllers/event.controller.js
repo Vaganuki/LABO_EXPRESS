@@ -75,11 +75,6 @@ const eventController = {
 					db.categorie
 				]
 			});
-			console.log();
-			console.log();
-			console.log(event);
-			console.log();
-			console.log();
 			if (event) {
 				res.status(200).json({ event: event, place_restante: event.places_count - event.inscriptions.length, format: event.format.name, categorie: event.categorie.name });
 			}
