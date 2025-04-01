@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const db = require('../models');
 const fs = require('fs');
 
@@ -67,9 +67,21 @@ const eventController = {
 	getById: async (req, res) => {
 		try {
 			const id = +req.params.id;
-			const event = await db.event.findOne({ where: { id }, include: [db.inscription] });
+			const event = await db.event.findOne({
+				where: {id},
+				include:[
+					db.inscription,
+					db.format,
+					db.categorie
+				]
+			});
+			console.log();
+			console.log();
+			console.log(event);
+			console.log();
+			console.log();
 			if (event) {
-				res.status(200).json({ event: event, place_restante: event.places_count - event.inscriptions.length });
+				res.status(200).json({ event: event, place_restante: event.places_count - event.inscriptions.length, format: event.format.name, categorie: event.categorie.name });
 			}
 			else {
 				res.status(404).json({ error: `Not found` });
