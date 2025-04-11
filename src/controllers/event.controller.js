@@ -10,6 +10,11 @@ const eventController = {
 
 			const events = await db.event.findAll({
 				where: { date_debut: { [Op.gte]: new Date() } },
+				include:[
+					db.inscription,
+					db.format,
+					db.categorie
+				],
 				limit: limit,
 				offset: offset,
 				order: [['date_debut', 'ASC']]
@@ -24,7 +29,7 @@ const eventController = {
 		} catch (err) {
 			console.error(`Erreur lors de la récupération des événements :`, err);
 			res.status(500).json({ error: `Une erreur est servenue lors de la récupération des données.`, details: err.message });
-		};
+		}
 	},
 	getArchive: async (req, res) => {
 		try {
@@ -34,11 +39,11 @@ const eventController = {
 
 			if (id_categorie) {
 				filters.id_categorie = id_categorie;
-			};
+			}
 
 			if (id_format) {
 				filters.id_format = id_format;
-			};
+			}
 
 			if (date_debut && date_fin) {
 				filters.date_debut = { [Op.between]: [date_debut, date_fin] };
@@ -46,14 +51,14 @@ const eventController = {
 				filters.date_debut = { [Op.gte]: date_debut };
 			} else if (date_fin) {
 				filters.date_fin = { [Op.lte]: date_fin };
-			};
+			}
 
 			if (terme) {
 				filters[Op.or] = [
 					{ name: { [Op.iLike]: `%${terme}%` } },
 					{ description: { [Op.iLike]: `%${terme}%` } },
 				];
-			};
+			}
 			const result = await db.event.findAll({
 				where: filters,
 				order: [['date_debut', 'ASC']]
@@ -76,7 +81,7 @@ const eventController = {
 				]
 			});
 			if (event) {
-				res.status(200).json({ event: event, place_restante: event.places_count - event.inscriptions.length, format: event.format.name, categorie: event.categorie.name });
+				res.status(200).json({ event: event, place_restante: event.places_count - event.inscriptions.length});
 			}
 			else {
 				res.status(404).json({ error: `Not found` });
@@ -84,7 +89,7 @@ const eventController = {
 		} catch (err) {
 			console.error(`Erreur lors de la récupération des événements :`, err);
 			res.status(500).json({ error: `Une erreur est servenue lors de la récupération des données.`, details: err.message });
-		};
+		}
 	},
 	addEvent: async (req, res) => {
 		try {

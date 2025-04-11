@@ -8,7 +8,7 @@ const userController = {
     },
     addUser: async (req, res) => {
         try {
-            const { nom, prenom, mail, mdp, ddn } = req.body;
+            const {nom, prenom, mail, mdp, ddn} = req.body;
 
             const user = await db.user.findOne({
                 where: {
@@ -18,28 +18,33 @@ const userController = {
 
             if (!user) {
                 const hash = await argon2.hash(mdp);
-                const data = await db.user.create({ nom, prenom, mail, mdp: hash, ddn });
+                const data = await db.user.create({nom, prenom, mail, mdp: hash, ddn});
                 res.status(201).json(data.toJSON());
-            }
-            else {
-                res.status(400).json({ error: 'Ce mail est déjà utilisé' });
+            } else {
+                res.status(400).json({error: 'Ce mail est déjà utilisé'});
             }
         } catch (err) {
             console.error(`Erreur lors de la récupération des événements :`, err);
-            res.status(500).json({ error: `Une erreur est servenue lors de la récupération des données.`, details: err.message });
-        };
+            res.status(500).json({
+                error: `Une erreur est servenue lors de la récupération des données.`,
+                details: err.message
+            });
+        }
     },
     login: async (req, res) => {
         let user = null;
+        const {mail, mdp} = req.body;
         try {
-            const { mail, mdp } = req.body;
-            user = await db.user.findOne({ where: { mail } });
+            user = await db.user.findOne({where: {mail}});
 
         } catch (err) {
             console.error(`Erreur lors de la récupération des événements :`, err);
-            res.status(500).json({ error: `Une erreur est servenue lors de la récupération des données.`, details: err.message });
+            res.status(500).json({
+                error: `Une erreur est survenue lors de la récupération des données.`,
+                details: err.message
+            });
             return;
-        };
+        }
         if (user) {
             try {
                 if (await argon2.verify(user.mdp, mdp)) {
@@ -51,16 +56,13 @@ const userController = {
                         algorithm: 'HS256',
                     });
                     res.status(202).json(token);
-                }
-                else {
+                } else {
                     res.status(401).json(`Email ou mot de passe incorrect`);
                 }
-            }
-            catch (err) {
+            } catch (err) {
                 res.status(500).json('Erreur serveur');
             }
-        }
-        else {
+        } else {
             res.status(401).json(`Email ou mot de passe incorrect`);
         }
     },
